@@ -53,7 +53,7 @@
                             if(!ctx.row.stock){
                                 return <div>没有库存</div>
                             }
-                            return ctx.row.stock               
+                            return <div>{ctx.row.stock}</div>             
                         }
                     },
                     {
