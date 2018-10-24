@@ -51,14 +51,9 @@
                         key: 'stock',
                         render: (h, ctx) => {
                             if(!ctx.row.stock){
-                                return <div>
-                                没有库存
-                                </div>
-                            }else{
-                                return <div>
-                                {ctx.row.stock}
-                                </div>
+                                return <div>没有库存</div>
                             }
+                            return ctx.row.stock               
                         }
                     },
                     {
@@ -71,7 +66,7 @@
                             <a on-click={() => this.clickTest(ctx.row)} style="margin-right:10px">测试</a>
                             <a on-click={() => this.handleRender('single',ctx.row)} style="margin-right:10px">编辑</a>
                             <a on-click={() => this.clickDelete(ctx.row)}>删除</a>
-                        </div>,
+                        </div>
                     }
 
                 ],
