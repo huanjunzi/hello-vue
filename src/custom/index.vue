@@ -1,6 +1,12 @@
 <template>
     <div>
-        <Button type='primary' @click="handleRender('multi', '')" :loading="showButton" style='margin: 10px 0 10px -772px;'>批量编辑</Button>
+        <div style='margin: 10px 0px 20px -784px;'>
+        <Button type='primary' @click="handleRender('multi', '')" :loading="showButton" style="">批量编辑</Button>
+        </div>
+        <div style='margin: 10px 0px 10px -551px'>    
+            <DatePicker type="daterange" split-panels placeholder="Select date" style="width: 200px" @on-change="changeTime"></DatePicker>
+            <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>导出原始数据</Button>
+        </div>
         <div style='margin: 0 20% 0 20%;'>
         <Table :columns="historyColumns" :data="historyData" ref="selection"  @on-selection-change="selectChange" :row-class-name="rowClassName"></Table>
         <Page :total="dataCount" :page-size="pageSize" :current="pageNum" show-elevator show-sizer class="paging" @on-change="changepage" @on-page-size-change="handlePageSize"></Page>
@@ -26,6 +32,7 @@
                 // 批量按钮隐藏和显示
                 showButton: false,
                 filterValue: {},
+                timeRange: [],
                 historyColumns: [
                     {
                         type: 'selection',
@@ -62,7 +69,8 @@
                         ],
                         filterRemote: function (value,row) {
                             // this.status = value;
-                            this.filterValue["price"] = value
+                            // this.filterValue["price"] = value
+                            _.extend(this.filterValue, { price: value })
                             this.handleListApproveHistory()
                             
                             // console.log('filterValue', this.filterValue)
@@ -117,14 +125,31 @@
             this.handleListApproveHistory()
         },
         methods:{
-            async pageSend(type,url,limit,offset,filterValue = {}){
+            // 时间筛选事件
+            async changeTime (value) {
+                this.timeRange = value
+                console.log('this.timeRange1', this.timeRange)
+                // 如果要传json数组 需要先将JS对象转成JSON字符串
+                this.timeRange = JSON.stringify(this.timeRange)
+                console.log('this.timeRange2', this.timeRange)
+                let r = await this.pageSend('get','/api/users/pageQuery',0,0,this.filterValue, this.timeRange)
+                console.log('r', r)
+                this.dataCount = r.rows ? r.rows.length : 0
+                this.historyData = r.rows ? r.rows.slice(0, this.pageSize) : []
+                this.disabledRow(this.historyData)
+            },
+            exportData (type) {
+                
+            },
+            async pageSend(type,url,limit,offset,filterValue = {},time = []){
                 let r = await this.$axios({
                     methods: type,
                     url: url,
                     params: {
                         limit,
                         offset,
-                        filter: filterValue
+                        filter: filterValue,
+                        timeRange: time
                     }
                 }).then(res => res.data)
                 // console.log('r==', r)
@@ -142,27 +167,29 @@
             // 获取历史记录信息
             
             async handleListApproveHistory(){
-                console.log('this.filterValue.price', this.filterValue.price)
                 if(_.isEmpty(this.filterValue.price)) {
                     this.filterValue = {}
                 }
-                let r = await this.pageSend('get','/api/users/pageQuery',0,0,this.filterValue)
-                if(r.rows.length < this.pageSize){
-                    this.historyData = r.rows
-                    this.dataCount = r.rows.length
-                    return
-                } 
-                this.dataCount = r.rows.length
-                this.historyData = r.rows.slice(0, this.pageSize)
+                if(_.isEmpty(this.timeRange)) {
+                    this.timeRange = []
+                }
+                let r = await this.pageSend('get','/api/users/pageQuery',0,0,this.filterValue, this.timeRange)
+                // if(r.rows.length < this.pageSize){
+                //     this.historyData = r.rows
+                //     this.dataCount = r.rows.length
+                //     return
+                // } 
+                this.dataCount = r.rows ? r.rows.length : 0
+                this.historyData = r.rows ? r.rows.slice(0, this.pageSize) : []
                 this.disabledRow(this.historyData)
             },
             async changepage(index){
                 var _start = ( index - 1 ) * this.pageSize;
                 var _end = this.pageSize;
-                let r = await this.pageSend('get', '/api/users/pageQuery', _start, _end, this.filterValue)
+                let r = await this.pageSend('get', '/api/users/pageQuery', _start, _end, this.filterValue, this.timeRange)
                 this.historyData = r.rows;
                 if(!_.isEmpty(this.filterValue.price)) {
-                   this.dataCount = r.rows.length
+                   this.dataCount = r.rows ? r.rows.length : 0
                 }
                 this.disabledRow(this.historyData)
             },
@@ -170,10 +197,10 @@
               this.pageSize = index
               let _start = (this.pageNum  - 1) * index;
               let _end = this.pageNum  * index;
-                let r = await this.pageSend('get', '/api/users/pageQuery', _start, _end, this.filterValue)
+                let r = await this.pageSend('get', '/api/users/pageQuery', _start, _end, this.filterValue, this.timeRange)
                 this.historyData = r.rows;
                 if(!_.isEmpty(this.filterValue.price)) {
-                   this.dataCount = r.rows.length
+                   this.dataCount = r.rows ? r.rows.length : 0
                 }
                 this.disabledRow(this.historyData)
             },
