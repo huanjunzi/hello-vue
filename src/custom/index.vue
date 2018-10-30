@@ -128,18 +128,16 @@
             // 时间筛选事件
             async changeTime (value) {
                 this.timeRange = value
-                console.log('this.timeRange1', this.timeRange)
                 // 如果要传json数组 需要先将JS对象转成JSON字符串
                 this.timeRange = JSON.stringify(this.timeRange)
-                console.log('this.timeRange2', this.timeRange)
                 let r = await this.pageSend('get','/api/users/pageQuery',0,0,this.filterValue, this.timeRange)
-                console.log('r', r)
                 this.dataCount = r.rows ? r.rows.length : 0
                 this.historyData = r.rows ? r.rows.slice(0, this.pageSize) : []
                 this.disabledRow(this.historyData)
             },
             exportData (type) {
-                
+                // 由于浏览器传参无法传对象 需要先转换成json字符串 数组则不受影响
+                window.location.href = `/api/users/downloadExcel?limit=0&offset=0&filter=${JSON.stringify(this.filterValue)}&timeRange=${this.timeRange}`
             },
             async pageSend(type,url,limit,offset,filterValue = {},time = []){
                 let r = await this.$axios({
