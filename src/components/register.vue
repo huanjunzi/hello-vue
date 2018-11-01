@@ -69,7 +69,7 @@ export default {
       return callback()
     },
     async handleSubmit() {
-      let valid = await this.$utils.validForm(this.$refs.formValidate)
+      let valid = await this.$validForm(this.$refs.formValidate)
       if (!valid) {
         return this.$Message.error("表单验证失败")
       }

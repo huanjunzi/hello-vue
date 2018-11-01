@@ -3,13 +3,16 @@
     <Form ref="form" :model="form" :rules="ruleValidate">
       <FormItem prop="name" style="">
         <Input type="text" v-model="form.name" placeholder="请输入名称" style="width:450px">
-        <Icon type="ios-person-outline" slot="prepend"></Icon>
+        <!-- <Icon type="ios-person-outline" slot="prepend"></Icon> -->
         </Input>
       </FormItem>
       <FormItem prop="description" style="">
         <Input type="text" v-model="form.description" placeholder="请输入描述信息" style="width:450px">
-        <Icon type="ios-locked-outline" slot="prepend"></Icon>
+        <!-- <Icon type="ios-locked-outline" slot="prepend"></Icon> -->
         </Input>
+      </FormItem>
+      <FormItem prop="img_url" style="">
+          <UploadOss :url.sync="imgUrl" type="image"></UploadOss>
       </FormItem>
     </Form>
   </div>
@@ -22,6 +25,7 @@ export default {
     let form = JSON.parse(JSON.stringify(this.data))
     return {
       form,
+      imgUrl: '',
       ruleValidate: {
           name: [
             { required: true, whitespace: true, message: '名字不能为空', trigger: 'blur' }
@@ -71,6 +75,27 @@ export default {
         }
       }
       return dataList
+    },
+    handleFormatError (file) {
+      this.$Notice.warning({
+          title: 'The file format is incorrect',
+          desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
+      })
+    },
+    handleMaxSize (file) {
+      this.$Notice.warning({
+          title: 'Exceeding file size limit',
+          desc: 'File  ' + file.name + ' is too large, no more than 2M.'
+      })
+    },
+    handleBeforeUpload () {
+      const check = this.uploadList.length < 5;
+      if (!check) {
+          this.$Notice.warning({
+              title: 'Up to five pictures can be uploaded.'
+          })
+      }
+      return check;
     }
   }
 }

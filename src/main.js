@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import axios from 'axios'
-import utils from './utils/utils'
+import {validForm} from './utils/utils'
 import {routers} from './router'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css'
@@ -13,14 +13,17 @@ Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(iView)
 Vue.prototype.$axios = axios
-Vue.prototype.$utils = utils
+Vue.prototype.$validForm = validForm
 Vue.config.productionTip = false
 const routeConfig = {
+  mode: 'history',
   routes : routers
 }
 
 const router = new VueRouter(routeConfig)
+// 每次路由跳转到的时候都会调用该函数
 router.beforeEach((to, from, next) => { //beforeEach是router的钩子函数，在进入路由前执行
+  console.log('路由初始化')
   /* 路由发生变化修改页面title */
   if (to.meta.title) {
     document.title = to.meta.title

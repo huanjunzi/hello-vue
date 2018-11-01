@@ -16,15 +16,23 @@ export const menuIndex = [
         { path: 'custom/index', meta: {title: 'custom'}, name: 'custom', component: resolve => require(['../custom/index.vue'], resolve) }
       ]
     },
-    {
-      path: '*',
-      redirect: '/index',
-    }
+    // {
+    //   path: '*',
+    //   redirect: '/index',
+    // }
 ]
 export const indexs = {
   path: '/index',
   name: 'index',
   component: resolve => require(['@/components/index.vue'], resolve), // 懒加载
+}
+export const notFound = {
+  path: '/*',
+  name: 'error-404',
+  meta: {
+      title: '404-页面不存在'
+  },
+  component:() => import('../components/404.vue')
 }
 
 export const loginUser = {
@@ -42,5 +50,6 @@ export const routers = [
     indexs,
     ...menuIndex,
     loginUser,
-    registerUser
+    registerUser,
+    notFound
 ]

@@ -22,6 +22,7 @@
 </template>
 <script>
 export default {
+  
   data() {
     const ids = this.$route.query.id
     return{
@@ -82,7 +83,7 @@ export default {
   //     return this.$Message.error("登录失败!用户名或密码不正确!")
   //   },
     async handleSubmit (name){
-      let valid = await this.$utils.validForm(this.$refs.formValidate)
+      let valid = await this.$validForm(this.$refs.formValidate)
       if (!valid) {
         return this.$Message.error("表单验证失败")
       }

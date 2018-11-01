@@ -4,8 +4,8 @@
         <Button type='primary' @click="handleRender('multi', '')" :loading="showButton" style="">批量编辑</Button>
         </div>
         <div style='margin: 10px 0px 10px -551px'>    
-            <DatePicker type="daterange" split-panels placeholder="Select date" style="width: 200px" @on-change="changeTime"></DatePicker>
-            <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>导出原始数据</Button>
+            <DatePicker type="daterange" split-panels placeholder="请选择日期" style="width: 200px" @on-change="changeTime"></DatePicker>
+            <Button type="primary" @click="exportData(1)" style='margin-left: 10px'><Icon type="ios-download-outline"></Icon>导出原始数据</Button>
         </div>
         <div style='margin: 0 20% 0 20%;'>
         <Table :columns="historyColumns" :data="historyData" ref="selection"  @on-selection-change="selectChange" :row-class-name="rowClassName"></Table>
@@ -18,6 +18,7 @@
     import tableEdit from './tableEdit'
     import _ from 'underscore'
     import {formatDate} from '../utils/timeFormat'
+    const defaultImgUrl = 'http://epj-images.oss-cn-shanghai.aliyuncs.com/m_center/notUpload.jpeg'
 
     export default {
         data () {
@@ -38,6 +39,12 @@
                         type: 'selection',
                         width: 55,
                         align: 'center'
+                    },
+                    {
+                        title: '图片',
+                        key: 'img_url',
+                        width: 100,
+                        render: (h, ctx) => <img src={ctx.row.img_url || defaultImgUrl} style="width: 60px; height: 60px"/>
                     },
                     {
                         title: '名字',
