@@ -6,20 +6,25 @@
       <a @click='routeTo("index/login",1)'>点击跳转到登录</a>
       <a @click='routeTo("index/register",2)'>点击跳转到注册</a>
     </div>
+    <load-ing :message="msg" :valid="age"></load-ing>
   </div>
 </template>
 <script>
 import $ from 'jquery'
+import loading from './loading'
 export default {
   data () {
     let name = this.$route.query.name
     return {
       theme1: 'dark',
       name,
-      msg: '用户主界面'
+      msg: '用户主界面',
+      age: '11'
     }
   },
-  components: {},
+  // components: {
+  //   loading
+  // },
   async created(){
     // await $.ajax({
     //   url:'https://api.weibo.com/2/users/show.json',
